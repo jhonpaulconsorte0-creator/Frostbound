@@ -1,0 +1,179 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Frostbound – Arctic Survival</title>
+<style>
+:root{--bg:#eaf3f7;--ink:#12303f;--pn:#fff;--ln:#b7ccd6;--ac:#c2461a;--mut:#4d6a79;--ok:#1b7a3d;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b1a24;--ink:#dcecf3;--pn:#132a38;--ln:#2b4a5c;--ac:#ff8a4c;--mut:#9db8c6;--ok:#6fd58f;--bad:#ff8a80}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1a24;--ink:#dcecf3;--pn:#132a38;--ln:#2b4a5c;--ac:#ff8a4c;--mut:#9db8c6;--ok:#6fd58f;--bad:#ff8a80}
+html,body{margin:0}body{background:var(--bg);color:var(--ink);font:15px/1.45 "Trebuchet MS",Verdana,sans-serif}
+main{max-width:1020px;margin:0 auto;padding:12px}
+h1{font:700 26px/1.1 "Palatino Linotype",Georgia,serif;margin:0}h2{font:700 17px Georgia,serif;margin:14px 0 6px}
+nav{display:flex;gap:8px;margin:10px 0}nav button,.btn{font:inherit;border:1px solid var(--ln);background:var(--pn);color:var(--ink);padding:6px 12px;border-radius:5px;cursor:pointer}
+nav button.on,.btn.pri{background:var(--ac);color:#fff;border-color:var(--ac)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,nav button:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.game{display:flex;gap:12px;flex-wrap:wrap}.cvw{position:relative;flex:1 1 560px;min-width:0}
+canvas{width:100%;height:auto;display:block;border-radius:6px;border:1px solid var(--ln)}
+.side{flex:1 1 220px;display:flex;flex-direction:column;gap:10px}.box{background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:10px}
+.m{margin:5px 0}.m small{display:flex;justify-content:space-between}.bar{height:10px;background:var(--ln);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%}
+#inv span{display:inline-block;margin:2px 8px 2px 0}.crafts{display:grid;gap:6px}.crafts .btn{text-align:left;font-size:13px}.crafts .btn small{display:block;color:inherit;opacity:.8}
+.hl{animation:p 1s infinite;border-color:var(--ac)!important;box-shadow:0 0 0 3px var(--ac)}@keyframes p{50%{box-shadow:0 0 0 1px var(--ac)}}
+@media (prefers-reduced-motion:reduce){.hl{animation:none}}
+#tc{position:absolute;top:8px;left:8px;right:8px;background:rgba(10,26,36,.88);color:#eef7fb;padding:8px 12px;border-radius:6px;font-size:14px;display:none}
+#tc b{color:#ffb27d}#tc .btn{float:right;font-size:12px;padding:2px 8px;background:transparent;color:#eef7fb;border-color:#6b8796}
+#toast{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(10,26,36,.9);color:#fff;padding:6px 14px;border-radius:16px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:92%;text-align:center}
+#ov{position:absolute;inset:0;background:rgba(8,20,29,.88);color:#eef7fb;display:flex;flex-direction:column;justify-content:center;padding:24px;border-radius:6px;gap:10px}
+#ov h1{color:#fff}#ov p{margin:0;max-width:60ch}#ov .row{display:flex;gap:8px;flex-wrap:wrap}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;background:var(--pn)}td,th{border:1px solid var(--ln);padding:5px 7px;text-align:left;vertical-align:top}
+.p{color:var(--ok);font-weight:700}.f{color:var(--bad);font-weight:700}.keys{color:var(--mut);font-size:13px}
+</style><link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet"><style>
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{color-scheme:dark;--bg:#17143a;--ink:#e6ecff;--pn:#221e55;--ln:#4b44a6;--ac:#ffb347;--mut:#a9b4e6;--ok:#7dffb2;--bad:#ff7a8a}
+body{font:19px/1.25 "VT323","Courier New",monospace;letter-spacing:.3px;background:linear-gradient(#17143a,#241d5c) fixed}
+h1{font:400 20px/1.4 "Press Start 2P","Courier New",monospace;color:var(--ac);text-shadow:3px 3px 0 #000}
+h2{font:400 13px/1.5 "Press Start 2P","Courier New",monospace;color:var(--ac)}
+*{border-radius:0!important}
+.box,table,nav button,.btn,#tc,#toast,#ov{border-width:3px!important}
+.box{box-shadow:4px 4px 0 #000}
+canvas{image-rendering:pixelated;border:4px solid #000;box-shadow:0 0 0 4px var(--ln)}
+.btn,nav button{font-family:inherit;font-size:18px;box-shadow:3px 3px 0 #000}
+.btn:active{transform:translate(3px,3px);box-shadow:none}
+.btn.pri,nav button.on{color:#1a1030;background:var(--ac);border-color:#000}
+.btn.hl{box-shadow:0 0 0 3px var(--ac),3px 3px 0 #000}
+.bar{height:14px;border:2px solid #000;background:#0d0b26;position:relative}.bar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(0,0,0,.5) 6px 8px)}
+#tc,#toast{border:3px solid var(--ac);background:#0d0b26;font-size:18px}
+#ov{background:rgba(13,11,38,.94)}#ov h1{color:var(--ac)}
+table{font-size:16px}th{background:#2d2770}
+</style></head><body><main>
+<h1>Frostbound – Arctic Survival</h1>
+<nav><button id="t1" class="on">Play</button><button id="t2">QA tests</button></nav>
+<section id="play"><div class="game"><div class="cvw"><canvas id="cv" width="768" height="512"></canvas><div id="tc"></div><div id="toast"></div><div id="ov"></div></div>
+<div class="side"><div class="box" id="bars"></div><div class="box"><b>Pack</b> <small>(max 10 each)</small><div id="inv"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn" data-k="eat" id="eat">Eat berry (Q)</button><button class="btn" data-k="drink" id="drink">Melt ice (R)</button></div></div>
+<div class="box"><b>Craft</b><div class="crafts" id="cr" style="margin-top:6px"></div></div>
+<div class="keys">Move WASD/arrows · Sprint Shift · Gather/use E · Attack Space</div></div></div></section>
+<section id="qa" hidden><h2>Bug log</h2>
+<div class="tw"><table><tr><th>Bug</th><th>Cause</th><th>Fix (v0.2)</th></tr>
+<tr><td>B1 Resource quantity: pack went above the cap (12/10), duplicating items</td><td>gather() added the yield without checking capacity</td><td>Clamp to cap; refuse and tell the player when full</td></tr>
+<tr><td>B2 Crafting cost: spear built with 0 stone; stone never spent</td><td>craft() checked and deducted only the first ingredient</td><td>Verify every ingredient first, then deduct all atomically</td></tr>
+<tr><td>B3 Combat damage: fists healed wolves, a coat healed the player, holding Space hit 60 times a second</td><td>damage = weapon − armor with no floor, and no attack cooldown</td><td>Minimum 1 damage; 0.4 s cooldown</td></tr></table></div>
+<h2>Test cases: expected vs actual</h2><p><button class="btn pri" id="run">Run tests on v0.1 and v0.2</button> <span id="sum"></span></p><div class="tw"><table id="tt"></table></div></section>
+<script>
+const CAP=10,BITE=8,WOLF={hp:30,armor:4},CD=.4,W=768,H=512;
+const RC={fire:{n:'Campfire',c:{wood:4,stone:1}},spear:{n:'Spear',c:{wood:2,stone:2}},coat:{n:'Fur coat',c:{hide:2}},flare:{n:'Signal flare',c:{wood:2,stone:2,hide:1}}};
+const v0={gather:(i,r,y)=>({...i,[r]:(i[r]||0)+y}),craft:(i,k)=>{const c=RC[k].c,f=Object.keys(c)[0];if((i[f]||0)<c[f])return{ok:0,inv:i};return{ok:1,inv:{...i,[f]:i[f]-c[f]}}},hit:(w,a)=>w-a,cd:0};
+const v1={gather:(i,r,y)=>{const a=Math.max(0,Math.min(y,CAP-(i[r]||0)));return{...i,[r]:(i[r]||0)+a}},craft:(i,k)=>{const c=RC[k].c;for(const r in c)if((i[r]||0)<c[r])return{ok:0,inv:i};const n={...i};for(const r in c)n[r]-=c[r];return{ok:1,inv:n}},hit:(w,a)=>Math.max(1,w-a),cd:CD};
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),D=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),$=id=>document.getElementById(id);
+const YI={tree:'wood',rock:'stone',bush:'berries',ice:'ice'},BEA={x:720,y:50};
+const cv=$('cv'),x=cv.getContext('2d'),keys={};let S=null,flakes=[...Array(70)].map(()=>({x:Math.random()*W,y:Math.random()*H,s:20+Math.random()*30}));
+/* ---------- QA ---------- */
+const hits=I=>{let l=-9,n=0;for(let t=0;t<1;t+=1/60)if(t-l>=I.cd-1e-9){n++;l=t}return n};
+const fmt=r=>(r.ok?'crafted':'blocked')+' w'+(r.inv.wood||0)+' s'+(r.inv.stone||0);
+const TESTS=[
+['T1','Gather 2 wood, empty pack','wood = 2',I=>I.gather({},'wood',2).wood,v=>v===2],
+['T2','Gather 3 stone with 9 in pack (cap 10)','stone = 10',I=>I.gather({stone:9},'stone',3).stone,v=>v===10],
+['T3','Gather berries with a full stack (10)','stays 10',I=>I.gather({berries:10},'berries',1).berries,v=>v===10],
+['T4','Craft spear: 2 wood, 0 stone','blocked w2 s0',I=>fmt(I.craft({wood:2,stone:0},'spear')),v=>v==='blocked w2 s0'],
+['T5','Craft spear: 2 wood, 2 stone','crafted w0 s0',I=>fmt(I.craft({wood:2,stone:2},'spear')),v=>v==='crafted w0 s0'],
+['T6','Craft fur coat: 1 hide (needs 2)','blocked',I=>I.craft({hide:1},'coat').ok?'crafted':'blocked',v=>v==='blocked'],
+['T7','Spear (10) vs wolf armor 4','6 damage',I=>I.hit(10,4),v=>v===6],
+['T8','Bare fists (3) vs wolf armor 4','1 damage (never heals)',I=>I.hit(3,4),v=>v===1],
+['T9','Weak bite (2) vs fur coat armor 3','1 damage (never heals)',I=>I.hit(2,3),v=>v===1],
+['T10','Hold Space for 1 second','3 hits or fewer',I=>hits(I),v=>v<=3]];
+function runQA(){let a=0,b=0,h='<tr><th>ID</th><th>Scenario</th><th>Expected</th><th>v0.1 actual</th><th>v0.1</th><th>v0.2 actual</th><th>v0.2</th></tr>';
+for(const[id,s,e,f,c]of TESTS){const r0=f(v0),r1=f(v1),p0=c(r0),p1=c(r1);a+=p0;b+=p1;h+=`<tr><td>${id}</td><td>${s}</td><td>${e}</td><td>${r0}</td><td class="${p0?'p':'f'}">${p0?'PASS':'FAIL'}</td><td>${r1}</td><td class="${p1?'p':'f'}">${p1?'PASS':'FAIL'}</td></tr>`}
+$('tt').innerHTML=h;$('sum').textContent=`v0.1: ${a}/${TESTS.length} passed · v0.2: ${b}/${TESTS.length} passed`}
+/* ---------- Game ---------- */
+const P=(k,n,a)=>a.map(q=>({k,n,x:q[0],y:q[1]}));
+function init(tut){S={run:1,over:0,p:{x:80,y:440},hp:100,st:100,wm:tut?55:70,hu:tut?60:75,th:tut?60:75,inv:{},gear:{},fires:[],wolves:[],t:0,lg:0,last:-9,ws:0,tut:tut?0:-1,tt:0,ate:0,drank:0,spr:0,fl:[],msg:0,hurt:0,storm:0,hlk:'',
+dummy:tut?{x:330,y:440,hp:12,w:0}:null,
+ents:[...P('tree',6,[[140,380]]),...P('tree',5,[[210,300],[330,200],[480,330],[600,420],[120,150],[420,90],[560,200]]),...P('rock',4,[[200,450],[390,360],[520,130],[680,300],[250,120]]),...P('bush',3,[[300,330],[100,260],[620,330],[460,230]]),...P('ice',5,[[60,60],[700,450],[350,470],[250,40]])]};
+if(!tut)spawnW(2);ui();$('ov').style.display='none'}
+const spawnW=n=>{for(let i=0;i<n;i++)S.wolves.push({x:380+Math.random()*340,y:40+Math.random()*300,hp:WOLF.hp,w:1,b:0})};
+const F=k=>S.ents.find(e=>e.k===k);
+const TUT=[
+['Walk','Use WASD or arrow keys to walk to the glowing tree.',()=>F('tree'),()=>D(S.p,F('tree'))<38,()=>''],
+['Gather wood','Stand next to the tree and press E repeatedly. Collect 4 wood. Each gather costs a little stamina.',()=>F('tree'),()=>S.inv.wood>=4,()=>''],
+['Gather stone','Walk to the grey rock and press E. Collect 3 stone.',()=>F('rock'),()=>S.inv.stone>=3,()=>''],
+['Build a campfire','Press Campfire in the Craft panel (4 wood + 1 stone). The fire is placed where you stand.',()=>null,()=>S.fires.length>0,()=>'fire'],
+['Stay warm','Warmth drains outside. Stand within the orange glow until Warmth reaches 85.',()=>S.fires[0],()=>S.wm>=85&&S.fires.some(f=>D(S.p,f)<90),()=>''],
+['Eat and drink','Pick berries at a bush and chip ice (E), then use Eat and Melt ice (or Q and R). Hunger and Thirst drain slowly.',()=>(!S.inv.berries&&!S.ate)?F('bush'):(!S.inv.ice&&!S.drank)?F('ice'):null,()=>S.ate&&S.drank,()=>S.ate?'drink':'eat'],
+['Sprint','Hold Shift while moving for 2 seconds. Watch the blue Stamina bar; it refills when you slow down.',()=>null,()=>S.spr>=2,()=>''],
+['Craft a spear','Spear costs 2 wood + 2 stone. Gather what is missing, then craft it.',()=>null,()=>S.gear.spear,()=>'spear'],
+['Fight the dummy','Stand next to the dummy and hold Space. Attacks have a 0.4 s cooldown. The spear hits for 10.',()=>S.dummy,()=>S.dummy.hp<=0,()=>''],
+['Your mission','Wolves drop hide. Get 1 hide, craft a Signal flare, reach the beacon (top right) and press E. A fur coat (2 hide) cuts bite damage and cold.',()=>BEA,()=>S.tt>8,()=>'flare']];
+function ui(){const m=[['hp','Health','#e0525a'],['st','Stamina','#3fa7d6'],['wm','Warmth','#ff8a4c'],['hu','Hunger','#c99a3b'],['th','Thirst','#6cc8e8']];
+if(!$('b_hp'))$('bars').innerHTML=m.map(([k,n,c])=>`<div class="m"><small><span>${n}</span><span id="v_${k}"></span></small><div class="bar"><i id="b_${k}" style="background:${c}"></i></div></div>`).join('');
+$('cr').innerHTML=Object.keys(RC).map(k=>`<button class="btn" data-k="${k}" onclick="mk('${k}')">${RC[k].n}<small>${Object.entries(RC[k].c).map(([r,n])=>n+' '+r).join(' + ')}</small></button>`).join('')}
+function toast(t){S.msg=3;const e=$('toast');e.textContent=t;e.style.opacity=1}
+function fl(x,y,t,c){S.fl.push({x,y,t,c:c||'#12303f',a:1})}
+function mk(k){if(!S||!S.run||S.over)return;const r=v1.craft(S.inv,k);if(!r.ok){const m=Object.entries(RC[k].c).filter(([q,n])=>(S.inv[q]||0)<n).map(([q,n])=>(n-(S.inv[q]||0))+' more '+q);return toast('Cannot craft '+RC[k].n+'. Need '+m.join(', ')+'.')}
+if(k!=='fire'&&S.gear[k])return toast('You already have a '+RC[k].n+'.');S.inv=r.inv;if(k==='fire')S.fires.push({x:S.p.x,y:S.p.y,t:120});else S.gear[k]=1;toast('Crafted '+RC[k].n+'!')}
+function eat(){if(S.inv.berries>0){S.inv.berries--;S.hu=Math.min(100,S.hu+25);S.ate=1;fl(S.p.x,S.p.y-18,'+25 hunger','#8a6310')}else toast('No berries. Pick some from a bush with E.')}
+function drink(){if(S.inv.ice>0){S.inv.ice--;S.th=Math.min(100,S.th+25);S.drank=1;fl(S.p.x,S.p.y-18,'+25 thirst','#1b6f94')}else toast('No ice. Chip some from blue ice with E.')}
+function act(){const p=S.p;if(D(p,BEA)<55){if(S.gear.flare)return end(1,'Rescued!','Your flare lit the ridge and the rescue helicopter answers. You survived the Kaltvik ice shelf.');return toast('The beacon needs a Signal flare. Craft one first.')}
+const e=S.ents.filter(e=>e.n>0&&D(p,e)<40).sort((a,b)=>D(p,a)-D(p,b))[0];if(!e)return toast('Nothing in reach. Walk up to a tree, rock, bush or blue ice.');
+if(S.st<3)return toast('Too tired to work. Stop and let stamina recover.');const r=YI[e.k],b=S.inv[r]||0;S.inv=v1.gather(S.inv,r,1);
+if((S.inv[r]||0)===b)return toast('Pack full ('+CAP+' max '+r+'). Use or craft something first.');e.n--;S.st-=3;fl(e.x,e.y-16,'+1 '+r)}
+function attack(){const p=S.p;S.last=S.t;const o=[...S.wolves,S.dummy].filter(o=>o&&o.hp>0&&D(p,o)<56).sort((a,b)=>D(p,a)-D(p,b))[0];
+if(!o)return fl(p.x,p.y-18,'miss','#4d6a79');const d=v1.hit(S.gear.spear?10:3,o.w?WOLF.armor:0);o.hp-=d;o.f=.15;fl(o.x,o.y-18,'-'+d,'#b3261e');
+if(o.hp<=0&&o.w){S.inv=v1.gather(S.inv,'hide',2);toast('Wolf down! +2 hide')}}
+function end(w,t,m){S.over=1;const o=$('ov');o.style.display='flex';o.innerHTML=`<h1>${t}</h1><p>${m}</p><div class="row"><button class="btn pri" onclick="init(0)">Play again</button><button class="btn" onclick="init(1)">Replay tutorial</button></div>`}
+function up(dt){if(!S||!S.run||S.over)return;S.t+=dt;const k=keys,p=S.p,dx=(k.d||k.arrowright?1:0)-(k.a||k.arrowleft?1:0),dy=(k.s||k.arrowdown?1:0)-(k.w||k.arrowup?1:0),mv=dx||dy,sp=mv&&k.shift&&S.st>3;
+if(mv){const l=Math.hypot(dx,dy),v=sp?150:90;p.x=cl(p.x+dx/l*v*dt,14,W-14);p.y=cl(p.y+dy/l*v*dt,14,H-14)}
+if(sp){S.st-=18*dt;S.spr+=dt}else S.st+=12*dt;S.st=cl(S.st,0,100);
+S.storm=S.tut<0&&S.t%70>50;const nf=S.fires.some(f=>D(p,f)<90);
+S.wm=cl(S.wm+(nf?8:-(S.gear.coat?.8:1.5)*(S.storm?2:1))*dt,0,100);S.hu=cl(S.hu-.7*dt,0,100);S.th=cl(S.th-1*dt,0,100);
+if(S.wm<=0||S.hu<=0||S.th<=0)S.hp-=3*dt;else if(S.wm>50&&S.hu>50&&S.th>50)S.hp=Math.min(100,S.hp+dt);
+S.fires.forEach(f=>f.t-=dt);S.fires=S.fires.filter(f=>f.t>0);
+if(k.e&&S.t-S.lg>.35){S.lg=S.t;act()}if(k[' ']&&S.t-S.last>=v1.cd)attack();
+for(const w of S.wolves){const d=D(p,w);if(d<170&&d>20){w.x+=(p.x-w.x)/d*70*dt;w.y+=(p.y-w.y)/d*70*dt}w.b-=dt;w.f=Math.max(0,(w.f||0)-dt);if(d<=24&&w.b<=0){w.b=1;const m=v1.hit(BITE,S.gear.coat?3:0);S.hp-=m;S.hurt=.2;fl(p.x,p.y-18,'-'+m,'#e0525a')}}
+S.wolves=S.wolves.filter(w=>w.hp>0);if(S.tut<0&&S.wolves.length<3&&S.t-S.ws>40){S.ws=S.t;spawnW(1)}
+S.hurt=Math.max(0,S.hurt-dt);S.fl.forEach(f=>{f.y-=20*dt;f.a-=dt});S.fl=S.fl.filter(f=>f.a>0);if(S.msg>0&&(S.msg-=dt)<=0)$('toast').style.opacity=0;
+if(S.tut>=0){S.tt+=dt;const s=TUT[S.tut];if(s[3]()){toast('✔ '+s[0]+' complete');S.tut++;S.tt=0;if(S.tut>=TUT.length){S.tut=-1;S.t=0;spawnW(2)}}}
+if(S.hp<=0)end(0,'You did not survive',S.wm<=0?'The cold took you. Stay near a campfire and craft a fur coat.':S.hu<=0?'You starved. Pick berries and eat before Hunger hits zero.':S.th<=0?'Dehydration got you. Chip ice and melt it often.':'The wolves overwhelmed you. Craft a spear and fight one at a time.')}
+function hud(){const s=S;for(const k of['hp','st','wm','hu','th']){const v=Math.max(0,Math.round(s[k]));$('b_'+k).style.width=v+'%';$('v_'+k).textContent=v}
+$('inv').innerHTML=['wood','stone','berries','ice','hide'].map(r=>`<span>${r}: <b>${s.inv[r]||0}</b></span>`).join('')+(s.gear.spear?'<span>🗡 spear</span>':'')+(s.gear.coat?'<span>🧥 coat</span>':'')+(s.gear.flare?'<span>🔥 flare</span>':'');
+const hl=s.tut>=0?TUT[s.tut][4]():'';document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;b.classList.toggle('hl',k===hl);if(RC[k])b.disabled=!!(S.gear[k]&&k!=='fire')});
+$('eat').disabled=!s.inv.berries;$('drink').disabled=!s.inv.ice;
+const tc=$('tc');if(s.tut>=0){const t=TUT[s.tut];tc.style.display='block';tc.innerHTML=`<button class="btn" onclick="S.tut=-1;S.t=0;spawnW(2);toast('Tutorial skipped. Survive!')">Skip</button><b>Step ${s.tut+1} of ${TUT.length} · ${t[0]}</b><br>${t[1]}`}else tc.style.display='none'}
+function draw(t){const s=S;x.fillStyle='#e6f1f6';x.fillRect(0,0,W,H);x.fillStyle='#d5e6ee';[[120,100,90],[560,260,120],[300,420,100],[690,170,70]].forEach(d=>{x.beginPath();x.ellipse(d[0],d[1],d[2],d[2]/3,0,0,7);x.fill()});
+const tg=s.tut>=0?TUT[s.tut][2]():null;
+for(const e of s.ents){const a=e.n>0?1:.35;x.globalAlpha=a;if(e.k==='tree'){x.fillStyle='#4a3828';x.fillRect(e.x-3,e.y,6,12);x.fillStyle='#1f5a45';x.beginPath();x.moveTo(e.x,e.y-26);x.lineTo(e.x+16,e.y+4);x.lineTo(e.x-16,e.y+4);x.fill()}
+else if(e.k==='rock'){x.fillStyle='#8a97a0';x.beginPath();x.ellipse(e.x,e.y,15,11,0,0,7);x.fill()}
+else if(e.k==='bush'){x.fillStyle='#3d7a4f';x.beginPath();x.arc(e.x,e.y,12,0,7);x.fill();x.fillStyle='#d23a4a';[[-5,-3],[4,2],[0,6]].forEach(q=>{x.beginPath();x.arc(e.x+q[0],e.y+q[1],2.5,0,7);x.fill()})}
+else{x.fillStyle='#8fd3ee';x.beginPath();x.moveTo(e.x,e.y-12);x.lineTo(e.x+11,e.y);x.lineTo(e.x,e.y+12);x.lineTo(e.x-11,e.y);x.fill()}x.globalAlpha=1}
+x.fillStyle='#394b57';x.fillRect(BEA.x-4,BEA.y-10,8,34);x.fillStyle=Math.sin(t/300)>0?'#ff3d3d':'#7a2a2a';x.beginPath();x.arc(BEA.x,BEA.y-14,7,0,7);x.fill();x.fillStyle='#12303f';x.font='12px sans-serif';x.textAlign='center';x.fillText('Rescue beacon',BEA.x-10,BEA.y+38);
+for(const f of s.fires){x.fillStyle='rgba(255,150,60,.2)';x.beginPath();x.arc(f.x,f.y,90,0,7);x.fill();x.fillStyle='#ff7a1f';x.beginPath();x.arc(f.x,f.y,9+Math.sin(t/90)*2,0,7);x.fill()}
+if(s.dummy){const d=s.dummy;x.fillStyle=d.hp>0?'#b58a54':'#6b5a42';x.fillRect(d.x-7,d.y-16,14,d.hp>0?30:10);x.fillStyle='#12303f';x.fillText(d.hp>0?'Training dummy '+d.hp+'/12':'Dummy down',d.x,d.y-22)}
+for(const w of s.wolves){x.fillStyle=w.f>0?'#fff':'#5d6b75';x.beginPath();x.arc(w.x,w.y,13,0,7);x.fill();x.fillStyle='#e8c34a';x.fillRect(w.x-6,w.y-4,3,3);x.fillRect(w.x+3,w.y-4,3,3);x.fillStyle='#b3261e';x.fillRect(w.x-13,w.y-22,26*w.hp/30,3)}
+if(tg&&tg.x!=null){x.strokeStyle='#ff8a4c';x.lineWidth=3;x.beginPath();x.arc(tg.x,tg.y,26+Math.sin(t/200)*5,0,7);x.stroke()}
+x.fillStyle=s.hurt>0?'#e0525a':s.gear.coat?'#7a3b1a':'#d9541e';x.beginPath();x.arc(s.p.x,s.p.y,12,0,7);x.fill();x.fillStyle='#f3d9c4';x.beginPath();x.arc(s.p.x,s.p.y-2,5,0,7);x.fill();
+x.font='bold 13px sans-serif';s.fl.forEach(f=>{x.globalAlpha=Math.max(0,f.a);x.fillStyle=f.c;x.fillText(f.t,f.x,f.y)});x.globalAlpha=1;
+if(s.storm){x.fillStyle='rgba(30,50,70,.4)';x.fillRect(0,0,W,H)}x.fillStyle='rgba(255,255,255,.85)';const sp=s.storm?3:1;
+for(const f of flakes){f.y=(f.y+f.s*.02*sp)%H;f.x=(f.x+(s.storm?2.5:.3)+W)%W;x.fillRect(f.x,f.y,2,2)}
+if(s.storm){x.fillStyle='#fff';x.font='bold 14px sans-serif';x.fillText('Storm: cold drains twice as fast. Stay by a fire.',W/2,490)}}
+let lt=0;function loop(t){const dt=Math.min(.05,(t-lt)/1000);lt=t;if(S){up(dt);hud();draw(t)}requestAnimationFrame(loop)}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=1;if(S&&S.run&&!S.over){if(k==='q')eat();if(k==='r')drink()}if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k)&&S&&S.run)e.preventDefault()});
+addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=0});$('eat').onclick=()=>S&&eat();$('drink').onclick=()=>S&&drink();
+function tab(n){$('play').hidden=n!==1;$('qa').hidden=n!==2;$('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';if(n===2)runQA()}
+$('t1').onclick=()=>tab(1);$('t2').onclick=()=>tab(2);$('run').onclick=runQA;
+function start(){S={run:0,over:0,p:{x:0,y:0},hp:100,st:100,wm:60,hu:60,th:60,inv:{},gear:{},fires:[],wolves:[],ents:[],fl:[],tut:-1,t:0,msg:0,hurt:0,storm:0};ui();const o=$('ov');o.style.display='flex';
+o.innerHTML=`<h1>Frostbound</h1><p>Mara Voss, a polar surveyor, survives a plane crash on the Kaltvik ice shelf. The radio is dead. A rescue beacon stands on the north-east ridge, but it only answers a signal flare. Wolves are tracking her scent and a storm is coming.</p><p>Gather wood, stone, berries and ice. Craft a fire, spear, coat and flare. Light the beacon.</p><div class="row"><button class="btn pri" id="s1">Start with tutorial</button><button class="btn" id="s2">Skip to survival</button></div>`;
+$('s1').onclick=()=>init(1);$('s2').onclick=()=>init(0)}
+start();requestAnimationFrame(loop);
+</script><script>
+function draw(t){const s=S,R=(a,b,w,h,c)=>{x.fillStyle=c;x.fillRect(Math.round(a/4)*4,Math.round(b/4)*4,w,h)},L=(q,a,b,c)=>{x.fillStyle='#000';x.fillText(q,a+1,b+1);x.fillStyle=c||'#fff';x.fillText(q,a,b)};
+for(let i=0;i<W;i+=32)for(let j=0;j<H;j+=32){x.fillStyle=((i+j)/32)%2?'#8aa3d4':'#7f98c9';x.fillRect(i,j,32,32)}
+x.font='bold 14px "Courier New",monospace';x.textAlign='center';const tg=s.tut>=0?TUT[s.tut][2]():null;
+for(const e of s.ents){x.globalAlpha=e.n>0?1:.35;
+if(e.k==='tree'){R(e.x-4,e.y+4,8,8,'#6b4423');R(e.x-16,e.y-4,32,10,'#14543a');R(e.x-12,e.y-12,24,10,'#1d7a52');R(e.x-8,e.y-20,16,10,'#2fa36b');R(e.x-4,e.y-24,8,4,'#fff')}
+else if(e.k==='rock'){R(e.x-12,e.y-4,24,12,'#5d6878');R(e.x-8,e.y-10,16,8,'#aab4c4')}
+else if(e.k==='bush'){R(e.x-12,e.y-8,24,16,'#2f8f4e');[[-8,-4],[4,0],[-2,4]].forEach(q=>R(e.x+q[0],e.y+q[1],4,4,'#ff4d6d'))}
+else{R(e.x-8,e.y-8,16,16,'#bff0ff');R(e.x-4,e.y-12,8,4,'#fff')}x.globalAlpha=1}
+R(BEA.x-4,BEA.y-8,8,32,'#e2e8f0');R(BEA.x-8,BEA.y-20,16,12,Math.sin(t/300)>0?'#ff3d3d':'#7a1f2a');L('Rescue beacon',BEA.x-14,BEA.y+40);
+for(const f of s.fires){x.globalAlpha=.16;x.fillStyle='#ffb347';x.fillRect(f.x-90,f.y-90,180,180);x.globalAlpha=1;R(f.x-8,f.y-4,16,12,'#ff7a1f');R(f.x-4,f.y-12-(Math.sin(t/120)>0?4:0),8,12,'#ffd23f')}
+if(s.dummy){const d=s.dummy;R(d.x-4,d.y-16,8,28,d.hp>0?'#d6a45f':'#7a6544');if(d.hp>0)R(d.x-12,d.y-8,24,6,'#d6a45f');L(d.hp>0?'Training dummy '+d.hp+'/12':'Dummy down',d.x,d.y-24)}
+for(const w of s.wolves){const c=w.f>0?'#fff':'#c9d1da';R(w.x-12,w.y-6,24,12,c);R(w.x+8,w.y-10,8,8,c);R(w.x+12,w.y-8,4,4,'#ffd23f');R(w.x-16,w.y-2,4,4,c);R(w.x-14,w.y-20,28,4,'#000');R(w.x-14,w.y-20,28*w.hp/30,4,'#ff4d6d')}
+if(tg&&tg.x!=null){const q=28+Math.round(Math.sin(t/200)*2)*2;x.strokeStyle='#ffb347';x.lineWidth=4;x.strokeRect(Math.round((tg.x-q)/4)*4,Math.round((tg.y-q)/4)*4,q*2,q*2)}
+R(s.p.x-8,s.p.y-8,16,16,s.hurt>0?'#ff4d6d':s.gear.coat?'#8a4b1f':'#ff7a1f');R(s.p.x-4,s.p.y-8,8,6,'#f6d5b8');
+x.font='bold 15px "Courier New",monospace';s.fl.forEach(f=>{x.globalAlpha=Math.max(0,f.a);L(f.t,f.x,f.y)});x.globalAlpha=1;
+if(s.storm){x.fillStyle='rgba(20,18,58,.5)';x.fillRect(0,0,W,H)}x.fillStyle='#fff';const sp=s.storm?3:1;
+for(const f of flakes){f.y=(f.y+f.s*.02*sp)%H;f.x=(f.x+(s.storm?2.5:.3)+W)%W;x.fillRect(f.x,f.y,4,4)}
+if(s.storm){x.font='bold 15px "Courier New",monospace';L('Storm: cold drains twice as fast. Stay by a fire.',W/2,490,'#ffb347')}}
+</script></main></body></html>
